@@ -1,0 +1,35 @@
+
+reqments.txt #storing dependencies for the project
+# ==========================================
+# AkadVerse Workspace Service - .gitignore
+# ==========================================
+
+# 1. CRITICAL SECURITY: Google OAuth Credentials
+# Never push these files to any repository!
+client_secret.json
+token.json
+
+# 2. Python Virtual Environments
+# Dependencies should be installed via requirements.txt, not tracked in Git.
+venv/
+.venv/
+env/
+.env/
+
+# 3. Python Cache and Compiled Files
+# These are generated automatically by Python and clutter the repo.
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 4. Environment Variables
+# If we add a .env file later for settings, we want to ignore it now.
+.env
+
+# 5. OS and IDE Generated Files
+# System files that do not belong in the code base.
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
