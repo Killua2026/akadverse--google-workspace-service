@@ -10,6 +10,7 @@ from google_auth_oauthlib.flow import Flow # For managing the OAuth2 flow
 from google.oauth2.credentials import Credentials # For handling OAuth2 credentials
 from google.auth.transport.requests import Request as GoogleRequest # For refreshing tokens
 from sheets_handler import AkadVerseSheetManager # Custom module to manage Google Sheets interactions
+from drive_handler import AkadVerseDriveManager # Custom module to manage Google Drive interactions
 import uvicorn # For running the FastAPI app
 
 app = FastAPI(title="AkadVerse Workspace Integration Service")
@@ -113,7 +114,76 @@ async def handle_assessment_event(event: dict):
         return {"status": "event_processed", "message": "Quiz result synced to Google Sheets"}
     else:
         raise HTTPException(status_code=500, detail="Failed to sync to Google Sheets")
+    
+
+@app.post("/webhook/setup-drive")
+async def setup_drive_folders():
+    """
+    Tests the Google Drive integration by creating the /AkadVerse/2026/Notes/ structure.
+    """
+    try:
+        creds = get_credentials()
+        if not creds:
+            raise HTTPException(status_code=401, detail="User not authenticated with Google")
+        
+        # Initialize our new manager
+        drive_manager = AkadVerseDriveManager(creds)
+        
+        # Trigger the folder creation logic
+        notes_folder_id = drive_manager.setup_akadverse_structure(year="2026")
+        
+        if notes_folder_id:
+            return {
+                "status": "success", 
+                "message": "AkadVerse folder structure verified/created successfully!",
+                "notes_folder_id": notes_folder_id
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to create folder structure. Check terminal logs.")
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Drive setup error: {str(e)}")
+
+@app.post("/webhook/save-generated-note")
+async def handle_save_note(event: dict):
+    """
+    Simulates a Kafka Consumer receiving a 'note.generated' event from the Notes Creator.
+    Expected Payload: {"title": "CSC332 Module 1 Summary", "content": "Here are your AI generated notes..."}
+    """
+    try:
+        creds = get_credentials()
+        if not creds:
+            raise HTTPException(status_code=401, detail="User not authenticated with Google")
+        
+        drive_manager = AkadVerseDriveManager(creds)
+        
+        # 1. Ensure the folder structure exists and get the target ID
+        notes_folder_id = drive_manager.setup_akadverse_structure(year="2026")
+        
+        if not notes_folder_id:
+            raise HTTPException(status_code=500, detail="Could not locate or create the target folder.")
+            
+        # 2. Extract data from the event and create the document
+        doc_title = event.get("title", "Untitled AkadVerse Note")
+        doc_content = event.get("content", "Empty content.")
+        
+        doc_link = drive_manager.create_note_doc(
+            title=doc_title, 
+            content=doc_content, 
+            folder_id=notes_folder_id
+        )
+        
+        if doc_link:
+            return {
+                "status": "success", 
+                "message": "Note successfully saved to Google Drive",
+                "link": doc_link
+            }
+        else:
+            raise HTTPException(status_code=500, detail="Failed to upload document to Drive.")
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Webhook processing error: {str(e)}")
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8002)
