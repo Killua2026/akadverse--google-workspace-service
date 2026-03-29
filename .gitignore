@@ -1,11 +1,8 @@
-
-reqments.txt #storing dependencies for the project
-# ==========================================
 # AkadVerse Workspace Service - .gitignore
 # ==========================================
 
 # 1. CRITICAL SECURITY: Google OAuth Credentials
-# Never push these files to any repository!
+# Never push these files to any repository
 client_secret.json
 token.json
 
