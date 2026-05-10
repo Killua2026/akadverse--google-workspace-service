@@ -1,6 +1,6 @@
 # AkadVerse: Google Workspace Integration Service
 
-**Tier 4 Data Pipeline / Integration | Microservice Port: `8002`**
+**Tier 4 Data Pipeline / Integration | Microservice Port: `8005`**
 
 A secure, event-driven data pipeline that bridges AkadVerse platform actions with Google Workspace, featuring dynamic AI model discovery and context-aware academic assistance for Covenant University students.
 
@@ -42,7 +42,7 @@ This service is a Tier 4 component of the AkadVerse AI-first e-learning platform
 Event Source (Kafka)
         |
         v
-[AkadVerse Integration Service] (Port 8002)
+[AkadVerse Integration Service] (Port 8005)
         |
         |-- [Auth Manager] (OAuth2 Handshake + Refresh Tokens)
         |-- [Model Registry] (Dynamic Discovery & Fallback Logic)
@@ -72,7 +72,7 @@ Google Workspace Ecosystem (Drive, Docs, Sheets)
 
 1.  Go to the [Google Cloud Console](https://console.cloud.google.com/).
 2.  Create an OAuth 2.0 Client ID for a Web Application.
-3.  Set the Authorized Redirect URI to `http://localhost:8002/callback`.
+3.  Set the Authorized Redirect URI to `http://localhost:8005/callback`.
 4.  Download the JSON, rename it to `client_secret.json`, and place it in the project root.
 5.  In the OAuth Consent Screen, add your testing email to the Test Users list.
 
@@ -101,7 +101,7 @@ pip install -r requirements.txt
 ## Running the Server
 
 ```bash
-uvicorn main:app --host 127.0.0.1 --port 8002 --reload
+uvicorn main:app --host 127.0.0.1 --port 8005 --reload
 ```
 
 ## API Endpoints
@@ -138,13 +138,13 @@ uvicorn main:app --host 127.0.0.1 --port 8002 --reload
 ## Testing with Swagger UI
 
 With the server running, open your browser and navigate to:
-[http://127.0.0.1:8002/docs](http://127.0.0.1:8002/docs)
+[http://127.0.0.1:8005/docs](http://127.0.0.1:8005/docs)
 
 ## Example Test Inputs
 
 **Test 1 -- Authenticate**
 
-Navigate to `http://localhost:8002/login`. Once you see the success message, verify `token.json` exists.
+Navigate to `http://localhost:8005/login`. Once you see the success message, verify `token.json` exists.
 
 **Test 2 -- Contextual Markdown Chat**
 

@@ -162,7 +162,7 @@ async def login():
     try:
         flow = Flow.from_client_secrets_file(
             CLIENT_SECRETS_FILE, scopes=SCOPES,
-            redirect_uri='http://localhost:8002/callback'
+            redirect_uri='http://localhost:8005/callback'
         )
         # Generate the auth URL and the unique state string
         # prompt='consent' forces Google to re-issue a refresh_token on every login.
@@ -479,6 +479,6 @@ async def contextual_chat(request: ChatRequest):
     )
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8002)
+    uvicorn.run(app, host="127.0.0.1", port=8005)
     
-# run with:  uvicorn main:app --host 127.0.0.1 --port 8002 --reload
+# run with:  uvicorn main:app --host 127.0.0.1 --port 8005 --reload
